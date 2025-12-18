@@ -8,7 +8,7 @@ import * as random from 'maath/random/dist/maath-random.esm';
 import { useScroll, useTransform } from 'framer-motion';
 
 function CyberParticles(props: any) {
-    const ref = useRef<any>();
+    const ref = useRef<any>(null);
     // Generate 5000 positions in a sphere
     const sphere = random.inSphere(new Float32Array(5000), { radius: 1.5 });
 

@@ -1,7 +1,7 @@
 
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
-type CommandHandler = (args: string[]) => string | JSX.Element;
+type CommandHandler = (args: string[]) => string | React.ReactNode;
 
 interface Command {
     name: string;
@@ -12,7 +12,7 @@ interface Command {
 interface HistoryItem {
     id: string;
     command: string;
-    output: string | JSX.Element;
+    output: string | React.ReactNode;
 }
 
 export const useTerminal = () => {
@@ -35,87 +35,87 @@ export const useTerminal = () => {
             name: 'help',
             description: 'List available commands',
             handler: () => (
-                <div className= "space-y-1" >
-                <p className="text-primary font-bold"> Available Commands: </p>
-          {
-        Object.values(commands).map(cmd => (
-            <div key= { cmd.name } className = "grid grid-cols-[100px_1fr] gap-2" >
-            <span className="text-secondary" > { cmd.name } </span>
-        < span className = "text-gray-400" > { cmd.description } </span>
-        </div>
-        ))
-    }
-    </div>
-      )
-    },
-clear: {
-    name: 'clear',
-        description: 'Clear the terminal output',
+                <div className="space-y-1" >
+                    <p className="text-primary font-bold"> Available Commands: </p>
+                    {
+                        Object.values(commands).map(cmd => (
+                            <div key={cmd.name} className="grid grid-cols-[100px_1fr] gap-2" >
+                                <span className="text-secondary" > {cmd.name} </span>
+                                < span className="text-gray-400" > {cmd.description} </span>
+                            </div>
+                        ))
+                    }
+                </div>
+            )
+        },
+        clear: {
+            name: 'clear',
+            description: 'Clear the terminal output',
             handler: () => {
                 setHistory([]);
                 return '';
             }
-},
-whoami: {
-    name: 'whoami',
-        description: 'Display current user',
+        },
+        whoami: {
+            name: 'whoami',
+            description: 'Display current user',
             handler: () => "visitor@krishnasec.portfolio"
-},
-ls: {
-    name: 'ls',
-        description: 'List files and sections',
+        },
+        ls: {
+            name: 'ls',
+            description: 'List files and sections',
             handler: () => (
-                <div className= "grid grid-cols-2 md:grid-cols-4 gap-2 text-blue-400" >
-                <span>resume.pdf </span>
-                < span > skills.txt </span>
-                < span > projects / </span>
-                < span > contact.exe </span>
-                < span > about.md </span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-blue-400" >
+                    <span>resume.pdf </span>
+                    < span > skills.txt </span>
+                    < span > projects / </span>
+                    < span > contact.exe </span>
+                    < span > about.md </span>
                 </div>
-        )
-},
-date: {
-    name: 'date',
-        description: 'Display current date-time',
+            )
+        },
+        date: {
+            name: 'date',
+            description: 'Display current date-time',
             handler: () => new Date().toString()
-}
-  };
-
-// Add more dynamic commands later (cat, etc.)
-
-const executeCommand = useCallback((input: string) => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-
-    const [cmdName, ...args] = trimmed.split(' ');
-    const command = commands[cmdName.toLowerCase()];
-
-    let output: string | JSX.Element;
-
-    if (command) {
-        if (cmdName.toLowerCase() === 'clear') {
-            command.handler(args);
-            return; // Special case for clear
         }
-        output = command.handler(args);
-    } else {
-        output = <span className="text-red-500" > Command not found: { cmdName }. Type 'help' for list.</span>;
-    }
+    };
 
-    setHistory(prev => [...prev, {
-        id: Math.random().toString(36).substr(2, 9),
-        command: trimmed,
-        output
-    }]);
-}, []);
+    // Add more dynamic commands later (cat, etc.)
 
-const toggleTerminal = () => setIsOpen(prev => !prev);
+    const executeCommand = useCallback((input: string) => {
+        const trimmed = input.trim();
+        if (!trimmed) return;
 
-return {
-    history,
-    executeCommand,
-    isOpen,
-    toggleTerminal,
-    setIsOpen
-};
+        const [cmdName, ...args] = trimmed.split(' ');
+        const command = commands[cmdName.toLowerCase()];
+
+        let output: string | React.ReactNode;
+
+        if (command) {
+            if (cmdName.toLowerCase() === 'clear') {
+                command.handler(args);
+                return; // Special case for clear
+            }
+            output = command.handler(args);
+        } else {
+            output = <span className="text-red-500" > Command not found: {cmdName}. Type 'help' for list.</span>;
+        }
+
+        setHistory(prev => [...prev, {
+            id: Math.random().toString(36).substr(2, 9),
+            command: trimmed,
+            output
+        }]);
+    }, []);
+
+    const toggleTerminal = () => setIsOpen(prev => !prev);
+
+    return {
+        history,
+        executeCommand,
+        isOpen,
+        toggleTerminal,
+        setIsOpen
+    };
 };
